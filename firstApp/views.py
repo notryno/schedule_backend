@@ -40,7 +40,32 @@ def register_user(request):
 def login_user(request):
     data = request.data
     print('Login Request Data:', data)
+    print('Email for authentication:', data['email'].lower())
+    print('Password for authentication:', data['password'])
 
+    user = authenticate(email=data['email'].lower(), password=data['password'])
+    print('Authenticated User:', user)
+
+    if user is not None:
+        # User is valid, generate and return an authentication token
+        token, created = Token.objects.get_or_create(user=user)
+        print('Generated Token:', token.key)
+        return Response({'token': token.key})
+    else:
+        print('Authentication failed. Checking user in the database.')
+
+        try:
+            # Try to get the user from the database
+            user_from_db = User.objects.get(email=data['email'].lower())
+            print('User in the database:', user_from_db)
+        except User.DoesNotExist:
+            print('User not found in the database.')
+
+        # User is not valid, return an error message
+        return Response({'error': 'Invalid credentials'}, status=401)
+
+
+    
     # try:
     #     email = data['email'].lower()
     #     password = data['password']
@@ -67,35 +92,4 @@ def login_user(request):
     #     # Other exceptions (handle them as needed)
     #     print('Error during login:', str(e))
     #     return Response({'error': 'An error occurred'}, status=500)
-
-    # Authenticate user
-    user = authenticate(email=data['email'].lower(), password=data['password'])
-
-    print('Authenticated User:', user)
-    print('User Query:', User.objects.filter(email=data['email']))
-    
-
-    print('HashedD:', User.objects.get(email=data['email']).password)
-
-
-    print('Email:', data['email'])
-    print('Password:', data['password'])
-
-
-
-    if user is not None:
-        # Inside the login_user function in views.py
-        print('Email in database:', User.objects.get(email=data['email']).email)
-        print('Hashed Password in database:', User.objects.get(email=data['email']).password)
-
-        if user.check_password(data['password']):
-            print('Password is correct.')
-
-        # User is valid, generate and return an authentication token
-        token, created = Token.objects.get_or_create(user=user)
-        print('Generated Token:', token.key)
-        return Response({'token': token.key})
-    else:
-        # User is not valid, return an error message
-        return Response({'error': 'Invalid credentials'}, status=401)
 

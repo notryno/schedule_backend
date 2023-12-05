@@ -5,7 +5,8 @@ from django.db import models
 class User(models.Model):
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=255)  # It's important to hash the password before saving it
-    last_login = models.DateTimeField(blank=True, null=True)
+    # last_login = models.DateTimeField(blank=True, null=True)
+    USERNAME_FIELD = "email"
 
 
 # from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
