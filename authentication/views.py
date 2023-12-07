@@ -5,8 +5,9 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.hashers import make_password
 from .models import CustomUser
+from django.utils import timezone
 from .serializers import UserSerializer
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
 
 class RegisterView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
@@ -43,6 +44,12 @@ class LoginView(generics.CreateAPIView):
 
         if not user:
             return Response({'error': 'Invalid credentials'},status=status.HTTP_401_UNAUTHORIZED)
+        
+        user.last_login = timezone.now()
+        print(user.last_login)
+        user.save()
+
+        login(request, user)
 
         refresh = RefreshToken.for_user(user)
 
