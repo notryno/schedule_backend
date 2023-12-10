@@ -1,4 +1,4 @@
-#!/Users/ryanlepcha/Downloads/Schedule/backend/venv/bin/python3.11
+#!/Users/ryanlepcha/Downloads/Schedule/backend/venv/bin/python3.12
 # -*- coding: utf-8 -*-
 import re
 import sys
