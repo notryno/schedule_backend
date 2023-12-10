@@ -15,6 +15,9 @@ class RegisterView(generics.CreateAPIView):
     permission_classes = (permissions.AllowAny,)
 
     def perform_create(self, serializer):
+        serializer.validated_data['first_name'] = self.request.data.get('first_name')
+        serializer.validated_data['last_name'] = self.request.data.get('last_name')
+        
         hashed_password = make_password(serializer.validated_data['password'])
         serializer.validated_data['password'] = hashed_password
         user = serializer.save()
