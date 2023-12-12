@@ -11,6 +11,7 @@ class CustomUser(AbstractUser):
     username = models.EmailField(unique=True)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
+    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
@@ -29,7 +30,7 @@ class CustomUser(AbstractUser):
             'The groups this user belongs to. A user will get all permissions '
             'granted to each of their groups.'
         ),
-        related_name='customuser_set',  # Add related_name
+        related_name='customuser_set',
         related_query_name='user',
     )
 
@@ -38,7 +39,6 @@ class CustomUser(AbstractUser):
         verbose_name=_('user permissions'),
         blank=True,
         help_text=_('Specific permissions for this user.'),
-        related_name='customuser_set',  # Add related_name
+        related_name='customuser_set',
         related_query_name='user',
     )
-# Create your models here.

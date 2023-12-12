@@ -15,20 +15,26 @@ class RegisterView(generics.CreateAPIView):
     permission_classes = (permissions.AllowAny,)
 
     def perform_create(self, serializer):
+        print("Request data:", self.request.data)
         serializer.validated_data['first_name'] = self.request.data.get('first_name')
         serializer.validated_data['last_name'] = self.request.data.get('last_name')
-        
+        serializer.validated_data['profile_picture'] = self.request.data.get('profile_picture')        
         hashed_password = make_password(serializer.validated_data['password'])
         serializer.validated_data['password'] = hashed_password
-        user = serializer.save()
+        print("Request FILES:", self.request.FILES)
+        user = serializer.create(serializer.validated_data)
 
         refresh = RefreshToken.for_user(user)
 
         print(f"User '{user.email}' successfully registered!")
+        serialized_user = UserSerializer(user)
         data = {
             'access_token': str(refresh.access_token),
             'refresh_token': str(refresh),
+            'profile_picture': serialized_user.data['profile_picture'],
         }
+        print("User profile picture URL:", data['profile_picture'])
+
         return Response(data, status=status.HTTP_201_CREATED)
 
 class LoginView(generics.CreateAPIView):
@@ -57,6 +63,7 @@ class LoginView(generics.CreateAPIView):
         refresh = RefreshToken.for_user(user)
 
         print(f"User '{user.email}' successfully logged in!")
+        serializer = UserSerializer(user)
         
         data = {
             'message': 'Registration successful',
