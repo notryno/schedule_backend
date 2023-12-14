@@ -60,14 +60,16 @@ class LoginView(generics.CreateAPIView):
 
         login(request, user)
 
+        serialized_user = UserSerializer(user)
+
         refresh = RefreshToken.for_user(user)
 
         print(f"User '{user.email}' successfully logged in!")
-        serializer = UserSerializer(user)
         
         data = {
             'message': 'Registration successful',
             'access_token': str(refresh.access_token),
             'refresh_token': str(refresh),
+            'profile_picture': serialized_user.data['profile_picture']
         }
         return Response(data, status=status.HTTP_200_OK)
