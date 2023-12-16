@@ -4,12 +4,13 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.hashers import make_password
 from django.utils import timezone
 from rest_framework import generics, permissions, status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import CustomUser
-from .serializers import GetUserDataSerializer, UserSerializer
+from .serializers import GetUserDataSerializer, PartialUserSerializer, UserSerializer
 
 
 class RegisterView(generics.CreateAPIView):
@@ -86,18 +87,6 @@ class LoginView(generics.CreateAPIView):
         return Response(data, status=status.HTTP_200_OK)
 
 
-# class GetUserDataView(APIView):
-#     permission_classes = (permissions.IsAuthenticated,)
-
-#     def get(self, request, *args, **kwargs):
-#         user = request.user
-#         serialized_user = UserSerializer(user)
-#         data = {
-#             "user_data": serialized_user.data,
-#         }
-#         return Response(data, status=status.HTTP_200_OK)
-
-
 class GetUserDataView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -109,11 +98,18 @@ class GetUserDataView(APIView):
         }
         return Response(data, status=status.HTTP_200_OK)
 
-    def post(self, request):
-        user = request.user
-        serializer = GetUserDataSerializer(user, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        print("Serializer errors:", serializer.errors)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UpdateUserDataView(generics.UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = PartialUserSerializer
+
+    def get_object(self):
+        return self.request.user
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop("partial", False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data, status=status.HTTP_200_OK)

@@ -52,3 +52,9 @@ class GetUserDataSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+
+class PartialUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ["first_name", "last_name", "profile_picture"]
