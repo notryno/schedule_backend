@@ -1,9 +1,10 @@
 # views.py
 
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import check_password, make_password
 from django.utils import timezone
 from rest_framework import generics, permissions, status
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -113,3 +114,29 @@ class UpdateUserDataView(generics.UpdateAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(["PATCH"])
+@permission_classes([IsAuthenticated])
+def update_password(request):
+    print("Request data:", request.data)
+    user = request.user
+
+    print("User:", user)
+    old_password = request.data.get("oldPassword", "")
+    new_password = request.data.get("newPassword", "")
+
+    # Check if the old password matches
+    if not check_password(old_password, user.password):
+        return Response(
+            {"error": "Invalid old password"}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    # Update the password
+    user.set_password(new_password)
+    user.save()
+
+    # Use DRF Response for consistent handling
+    return Response(
+        {"message": "Password updated successfully"}, status=status.HTTP_200_OK
+    )
