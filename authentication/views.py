@@ -10,8 +10,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import CustomUser
-from .serializers import GetUserDataSerializer, PartialUserSerializer, UserSerializer
+from .models import CustomUser, Task
+from .serializers import (
+    GetUserDataSerializer,
+    PartialUserSerializer,
+    TaskSerializer,
+    UserSerializer,
+)
 
 
 class RegisterView(generics.CreateAPIView):
@@ -140,3 +145,18 @@ def update_password(request):
     return Response(
         {"message": "Password updated successfully"}, status=status.HTTP_200_OK
     )
+
+
+class TaskListCreateView(generics.ListCreateAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        # Associate the task with the authenticated user
+        serializer.save(user=self.request.user)
+
+
+class TaskRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer

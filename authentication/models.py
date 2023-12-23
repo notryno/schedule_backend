@@ -44,3 +44,11 @@ class CustomUser(AbstractUser):
         related_name="customuser_set",
         related_query_name="user",
     )
+
+
+class Task(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    completed = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)

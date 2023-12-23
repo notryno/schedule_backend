@@ -2,7 +2,7 @@
 
 from rest_framework import serializers
 
-from .models import CustomUser
+from .models import CustomUser, Task
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -58,3 +58,11 @@ class PartialUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ["first_name", "last_name", "profile_picture"]
+
+
+class TaskSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = Task
+        fields = ["id", "user", "title", "description", "completed", "created_at"]
