@@ -11,6 +11,7 @@ User = get_user_model()
 class Schedule(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
+    start_date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
     type = models.CharField(max_length=100)
@@ -26,9 +27,9 @@ class Schedule(models.Model):
 
     def generate_schedule(self):
         schedule = []
-        current_date = timezone.now().date()
+        current_date = self.start_date
         for i in range(self.number_of_instances):
-            current_date = current_date + timedelta(days=self.frequency_per_week)
+            current_date += timedelta(days=self.frequency_per_week)
             weekday = (
                 current_date.weekday()
             )  # 0 for Monday, 1 for Tuesday, ..., 6 for Sunday

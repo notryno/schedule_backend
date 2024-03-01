@@ -1,7 +1,7 @@
 from django.http import JsonResponse
-from models import Task
 from rest_framework import generics, permissions
 
+from .models import Task
 from .serializers import TaskSerializer
 
 
