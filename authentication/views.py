@@ -2,7 +2,6 @@
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.hashers import check_password, make_password
-from django.http import JsonResponse
 from django.utils import timezone
 from rest_framework import generics, permissions, status
 from rest_framework.decorators import api_view, permission_classes
@@ -11,13 +10,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import CustomUser, Task
-from .serializers import (
-    GetUserDataSerializer,
-    PartialUserSerializer,
-    TaskSerializer,
-    UserSerializer,
-)
+from .models import CustomUser
+from .serializers import GetUserDataSerializer, PartialUserSerializer, UserSerializer
 
 
 class RegisterView(generics.CreateAPIView):
@@ -146,25 +140,3 @@ def update_password(request):
     return Response(
         {"message": "Password updated successfully"}, status=status.HTTP_200_OK
     )
-
-
-class TaskListCreateView(generics.ListCreateAPIView):
-    print("TaskListCreateView")
-    queryset = Task.objects.all()
-    serializer_class = TaskSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def perform_create(self, serializer):
-        try:
-            # Associate the task with the authenticated user
-            serializer.save(user=self.request.user)
-        except Exception as e:
-            # Log the exception for debugging
-            print(f"Error creating task: {e}")
-            return JsonResponse({"error": str(e)}, status=400)
-
-
-class TaskRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
-    print("TaskRetrieveUpdateDeleteView")
-    queryset = Task.objects.all()
-    serializer_class = TaskSerializer

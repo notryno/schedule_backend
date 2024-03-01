@@ -1,7 +1,11 @@
 # models.py
 
+from datetime import timedelta
+
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 
@@ -44,14 +48,3 @@ class CustomUser(AbstractUser):
         related_name="customuser_set",
         related_query_name="user",
     )
-
-
-class Task(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    title = models.CharField(max_length=255)
-    description = models.TextField()
-    completed = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    due_date = models.DateField(null=True, blank=True)
-    due_time = models.TimeField(null=True, blank=True)
-    all_day = models.BooleanField(default=False, blank=True)
