@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "authentication",
     "task",
     "schedule",
+    "classroom",
     "corsheaders",
     "rest_framework",
     "rest_framework_simplejwt",
