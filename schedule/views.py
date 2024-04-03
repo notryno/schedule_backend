@@ -13,7 +13,9 @@ class ScheduleListView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset().filter(user=request.user)
+        user = request.user
+        classroom = user.classroom
+        queryset = self.get_queryset().filter(classroom=classroom)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -44,7 +46,7 @@ class SpecialScheduleListView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         return SpecialSchedule.objects.select_related("schedule").filter(
-            schedule__user=self.request.user
+            schedule__classroom=self.request.user.classroom
         )
 
     def list(self, request, *args, **kwargs):

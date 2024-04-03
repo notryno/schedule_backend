@@ -5,11 +5,14 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from classroom.models import Classroom
+
 User = get_user_model()
 
 
 class Schedule(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    # user = models.ForeignKey(User, on_delete=models.CASCADE)
+    classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE, null=True)
     title = models.CharField(max_length=255)
     start_date = models.DateField()
     start_time = models.TimeField()
