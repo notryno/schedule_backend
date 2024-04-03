@@ -4,7 +4,7 @@ from . import views
 from .views import ScheduleListView, SpecialScheduleListView
 
 urlpatterns = [
-    path("schedule/", views.ScheduleListView.as_view(), name="schedule-list"),
+    # path("schedule/", views.ScheduleListView.as_view(), name="schedule-list"),
     # path(
     #     "schedule/<int:pk>/", views.ScheduleDetailView.as_view(), name="schedule-detail"
     # ),
