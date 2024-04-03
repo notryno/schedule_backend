@@ -38,12 +38,13 @@ class GetUserDataSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ["email", "first_name", "last_name", "profile_picture"]
+        fields = ["email", "first_name", "last_name", "profile_picture", "classroom"]
 
     def update(self, instance, validated_data):
         instance.email = validated_data.get("email", instance.email)
         instance.first_name = validated_data.get("first_name", instance.first_name)
         instance.last_name = validated_data.get("last_name", instance.last_name)
+        instance.classroom = validated_data.get("classroom", instance.last_name)
 
         # Update the profile picture only if provided
         profile_picture = validated_data.get("profile_picture")
